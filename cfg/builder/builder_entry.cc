@@ -91,6 +91,9 @@ unique_ptr<CFG> CFGBuilder::buildFor(core::Context ctx, ast::MethodDef &md) {
     auto rvLoc = cont->exprs.empty() || isa_instruction<LoadArg>(cont->exprs.back().value.get())
                      ? md.loc
                      : cont->exprs.back().loc;
+    // This might insert a duplicate return if the user wrote `return` literally, or if
+    // `eagerReturn` caused a `return` instruction to be added directly after another instruction,
+    // so we mark it synthetic to hide it from dead code checking.
     synthesizeExpr(cont, retSym1, rvLoc, make_unique<Return>(retSym)); // dead assign.
     jumpToDead(cont, *res.get(), rvLoc);
 
