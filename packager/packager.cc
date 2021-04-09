@@ -7,6 +7,7 @@
 #include "common/FileOps.h"
 #include "common/concurrency/ConcurrentQueue.h"
 #include "common/concurrency/WorkerPool.h"
+#include "common/formatting.h"
 #include "common/sort.h"
 #include "core/Unfreeze.h"
 #include "core/errors/packager.h"
@@ -230,6 +231,95 @@ ast::UnresolvedConstantLit *verifyConstant(core::MutableContext ctx, core::NameR
     }
     return target;
 }
+
+struct EnforcePackagePrefix {
+    const PackageInfo *pkg;
+    vector<core::NameRef> nameParts;
+    int rootConsts = 0;
+
+    EnforcePackagePrefix(const PackageInfo *pkg) : pkg(pkg) {
+        ENFORCE(pkg != nullptr);
+    }
+
+    void pushConstantLit(ast::UnresolvedConstantLit *lit) {
+        auto oldLen = nameParts.size();
+        while (lit != nullptr) {
+            nameParts.emplace_back(lit->cnst);
+            auto scope = ast::cast_tree<ast::ConstantLit>(lit->scope);
+            lit = ast::cast_tree<ast::UnresolvedConstantLit>(lit->scope);
+            if (scope != nullptr) {
+                ENFORCE(lit == nullptr);
+                ENFORCE(scope->symbol == core::Symbols::root());
+                rootConsts++;
+            }
+        }
+        reverse(nameParts.begin() + oldLen, nameParts.end()); // TODO I could do this recursively
+    }
+
+    void popConstantLit(ast::UnresolvedConstantLit *lit) {
+        while (lit != nullptr) {
+            nameParts.pop_back();
+            auto scope = ast::cast_tree<ast::ConstantLit>(lit->scope);
+            lit = ast::cast_tree<ast::UnresolvedConstantLit>(lit->scope);
+            if (scope != nullptr) {
+                ENFORCE(lit == nullptr);
+                ENFORCE(scope->symbol == core::Symbols::root());
+                rootConsts--;
+            }
+        }
+    }
+
+    ast::ExpressionPtr preTransformClassDef(core::MutableContext ctx, ast::ExpressionPtr tree) {
+        auto &classDef = ast::cast_tree_nonnull<ast::ClassDef>(tree);
+        if (classDef.symbol == core::Symbols::root()) {
+            // Ignore top-level <root>
+            return tree;
+        }
+        auto &pkgName = pkg->name.fullName.parts;
+        bool skipCheck = nameParts.size() > pkgName.size();
+        auto *constantLit = &ast::cast_tree_nonnull<ast::UnresolvedConstantLit>(classDef.name);
+        pushConstantLit(constantLit);
+
+        size_t minSize = std::min(pkgName.size(), nameParts.size());
+        if (!skipCheck && rootConsts == 0 &&
+            !std::equal(pkgName.begin(), pkgName.begin() + minSize, nameParts.begin(), nameParts.begin() + minSize)) {
+            if (auto e =
+                    ctx.beginError(constantLit->loc, core::errors::Packager::InvalidImportOrExport)) { // TODO new error
+                e.setHeader("TODO Class");
+            }
+        }
+        return tree;
+    }
+
+    ast::ExpressionPtr postTransformClassDef(core::MutableContext ctx, ast::ExpressionPtr tree) {
+        auto &classDef = ast::cast_tree_nonnull<ast::ClassDef>(tree);
+        if (classDef.symbol == core::Symbols::root()) {
+            ENFORCE(nameParts.size() == 0); // Sanity check bookkeeping
+            ENFORCE(rootConsts == 0);
+            return tree;
+        }
+        auto *constantLit = &ast::cast_tree_nonnull<ast::UnresolvedConstantLit>(classDef.name);
+        popConstantLit(constantLit);
+        return tree;
+    }
+
+    ast::ExpressionPtr preTransformAssign(core::MutableContext ctx, ast::ExpressionPtr original) {
+        auto &asgn = ast::cast_tree_nonnull<ast::Assign>(original);
+        auto lhs = ast::cast_tree<ast::UnresolvedConstantLit>(asgn.lhs);
+        if (lhs != nullptr) {
+            auto &pkgName = pkg->name.fullName.parts;
+            size_t minSize = std::min(pkgName.size(), nameParts.size());
+            if (rootConsts == 0 &&
+                !std::equal(pkgName.begin(), pkgName.end(), nameParts.begin(), nameParts.begin() + minSize)) {
+                if (auto e =
+                        ctx.beginError(lhs->loc, core::errors::Packager::InvalidImportOrExport)) { // TODO new error
+                    e.setHeader("TODO Const");
+                }
+            }
+        }
+        return original;
+    }
+};
 
 struct PackageInfoFinder {
     unique_ptr<PackageInfo> info = nullptr;
@@ -599,13 +689,16 @@ ast::ParsedFile rewritePackage(core::Context ctx, ast::ParsedFile file, const Pa
     return file;
 }
 
-ast::ParsedFile rewritePackagedFile(core::Context ctx, ast::ParsedFile file, core::NameRef packageMangledName) {
+ast::ParsedFile rewritePackagedFile(core::MutableContext ctx, ast::ParsedFile file, core::NameRef packageMangledName,
+                                    const PackageInfo *pkg) {
     if (ast::isa_tree<ast::EmptyTree>(file.tree)) {
         // Nothing to wrap. This occurs when a file is marked typed: Ignore.
         return file;
     }
 
     auto &rootKlass = ast::cast_tree_nonnull<ast::ClassDef>(file.tree);
+    EnforcePackagePrefix enforcePrefix(pkg);
+    file.tree = ast::TreeMap::apply(ctx, enforcePrefix, move(file.tree));
     auto moduleWrapper =
         ast::MK::Module(core::LocOffsets::none(), core::LocOffsets::none(),
                         name2Expr(packageMangledName, name2Expr(core::Names::Constants::PackageRegistry())), {},
@@ -689,9 +782,9 @@ vector<ast::ParsedFile> Packager::run(core::GlobalState &gs, WorkerPool &workers
                 if (result.gotItem()) {
                     filesProcessed++;
                     if (job.file.data(gs).sourceType == core::File::Type::Normal) {
-                        core::Context ctx(gs, core::Symbols::root(), job.file);
+                        core::MutableContext ctx(gs, core::Symbols::root(), job.file);
                         if (auto pkg = constPkgDB.getPackageForContext(ctx)) {
-                            job = rewritePackagedFile(ctx, move(job), pkg->name.mangledName);
+                            job = rewritePackagedFile(ctx, move(job), pkg->name.mangledName, pkg);
                         } else {
                             // Don't transform, but raise an error on the first line.
                             if (auto e =
