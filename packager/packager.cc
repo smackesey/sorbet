@@ -232,41 +232,14 @@ ast::UnresolvedConstantLit *verifyConstant(core::MutableContext ctx, core::NameR
     return target;
 }
 
-struct EnforcePackagePrefix {
+class EnforcePackagePrefix {
     const PackageInfo *pkg;
     vector<core::NameRef> nameParts;
     int rootConsts = 0;
 
+public:
     EnforcePackagePrefix(const PackageInfo *pkg) : pkg(pkg) {
         ENFORCE(pkg != nullptr);
-    }
-
-    void pushConstantLit(ast::UnresolvedConstantLit *lit) {
-        auto oldLen = nameParts.size();
-        while (lit != nullptr) {
-            nameParts.emplace_back(lit->cnst);
-            auto scope = ast::cast_tree<ast::ConstantLit>(lit->scope);
-            lit = ast::cast_tree<ast::UnresolvedConstantLit>(lit->scope);
-            if (scope != nullptr) {
-                ENFORCE(lit == nullptr);
-                ENFORCE(scope->symbol == core::Symbols::root());
-                rootConsts++;
-            }
-        }
-        reverse(nameParts.begin() + oldLen, nameParts.end()); // TODO I could do this recursively
-    }
-
-    void popConstantLit(ast::UnresolvedConstantLit *lit) {
-        while (lit != nullptr) {
-            nameParts.pop_back();
-            auto scope = ast::cast_tree<ast::ConstantLit>(lit->scope);
-            lit = ast::cast_tree<ast::UnresolvedConstantLit>(lit->scope);
-            if (scope != nullptr) {
-                ENFORCE(lit == nullptr);
-                ENFORCE(scope->symbol == core::Symbols::root());
-                rootConsts--;
-            }
-        }
     }
 
     ast::ExpressionPtr preTransformClassDef(core::MutableContext ctx, ast::ExpressionPtr tree) {
@@ -276,15 +249,15 @@ struct EnforcePackagePrefix {
             return tree;
         }
         auto &pkgName = pkg->name.fullName.parts;
-        bool skipCheck = nameParts.size() > pkgName.size();
-        auto *constantLit = &ast::cast_tree_nonnull<ast::UnresolvedConstantLit>(classDef.name);
-        pushConstantLit(constantLit);
+        bool skipCheck = nameParts.size() > pkgName.size(); // TODO can we skip push with a counter?
+        auto &constantLit = ast::cast_tree_nonnull<ast::UnresolvedConstantLit>(classDef.name);
+        pushConstantLit(&constantLit);
 
         size_t minSize = std::min(pkgName.size(), nameParts.size());
         if (!skipCheck && rootConsts == 0 &&
             !std::equal(pkgName.begin(), pkgName.begin() + minSize, nameParts.begin(), nameParts.begin() + minSize)) {
             if (auto e =
-                    ctx.beginError(constantLit->loc, core::errors::Packager::InvalidImportOrExport)) { // TODO new error
+                    ctx.beginError(constantLit.loc, core::errors::Packager::InvalidImportOrExport)) { // TODO new error
                 e.setHeader("TODO Class");
             }
         }
@@ -318,6 +291,35 @@ struct EnforcePackagePrefix {
             }
         }
         return original;
+    }
+
+private:
+    void pushConstantLit(ast::UnresolvedConstantLit *lit) {
+        auto oldLen = nameParts.size();
+        while (lit != nullptr) {
+            nameParts.emplace_back(lit->cnst);
+            auto scope = ast::cast_tree<ast::ConstantLit>(lit->scope);
+            lit = ast::cast_tree<ast::UnresolvedConstantLit>(lit->scope);
+            if (scope != nullptr) {
+                ENFORCE(lit == nullptr);
+                ENFORCE(scope->symbol == core::Symbols::root());
+                rootConsts++;
+            }
+        }
+        reverse(nameParts.begin() + oldLen, nameParts.end()); // TODO I could do this recursively
+    }
+
+    void popConstantLit(ast::UnresolvedConstantLit *lit) {
+        while (lit != nullptr) {
+            nameParts.pop_back();
+            auto scope = ast::cast_tree<ast::ConstantLit>(lit->scope);
+            lit = ast::cast_tree<ast::UnresolvedConstantLit>(lit->scope);
+            if (scope != nullptr) {
+                ENFORCE(lit == nullptr);
+                ENFORCE(scope->symbol == core::Symbols::root());
+                rootConsts--;
+            }
+        }
     }
 };
 
@@ -698,7 +700,7 @@ ast::ParsedFile rewritePackagedFile(core::MutableContext ctx, ast::ParsedFile fi
 
     auto &rootKlass = ast::cast_tree_nonnull<ast::ClassDef>(file.tree);
     EnforcePackagePrefix enforcePrefix(pkg);
-    file.tree = ast::TreeMap::apply(ctx, enforcePrefix, move(file.tree));
+    file.tree = ast::ShallowMap::apply(ctx, enforcePrefix, move(file.tree));
     auto moduleWrapper =
         ast::MK::Module(core::LocOffsets::none(), core::LocOffsets::none(),
                         name2Expr(packageMangledName, name2Expr(core::Names::Constants::PackageRegistry())), {},

@@ -22,6 +22,12 @@ module Root::Nested
 end
 
 module Root
+  module Nested
+    class SomeClass; end
+  end
+end
+
+module Root
   extend T::Sig
   NOT_IN_PACKAGE = T.let(1, Integer)
 
