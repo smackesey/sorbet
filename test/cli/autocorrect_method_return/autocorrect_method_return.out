@@ -41,8 +41,8 @@ autocorrect_method_return.rb:22: Expected `String` but found `T.nilable(String)`
     22 |  return res
                  ^^^
 
-autocorrect_method_return.rb:32: Expected `String` but found `NilClass` for method result type https://srb.help/7005
-    32 |end
+autocorrect_method_return.rb:30: Expected `String` but found `NilClass` for method result type https://srb.help/7005
+    30 |end
         ^^^
   Expected `String` for result type of method `implicit_return_via_else`:
     autocorrect_method_return.rb:26:
@@ -85,8 +85,6 @@ def implicit_return_via_else
   if T.unsafe(nil)
     return 'yep'
   end
-  # TODO(jez) This causes a syntax error that we should detect and skip
-  # emitting an autocorrect for.
 end
 
 --------------------------------------------------------------------------
@@ -142,8 +140,8 @@ autocorrect_method_return.rb:22: Expected `String` but found `T.nilable(String)`
     22 |  return res
                  ^^^
 
-autocorrect_method_return.rb:32: Expected `String` but found `NilClass` for method result type https://srb.help/7005
-    32 |end
+autocorrect_method_return.rb:30: Expected `String` but found `NilClass` for method result type https://srb.help/7005
+    30 |end
         ^^^
   Expected `String` for result type of method `implicit_return_via_else`:
     autocorrect_method_return.rb:26:
@@ -186,6 +184,4 @@ def implicit_return_via_else
   if T.unsafe(nil)
     return 'yep'
   end
-  # TODO(jez) This causes a syntax error that we should detect and skip
-  # emitting an autocorrect for.
 end
