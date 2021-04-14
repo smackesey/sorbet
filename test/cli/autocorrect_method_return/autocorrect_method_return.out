@@ -36,6 +36,10 @@ autocorrect_method_return.rb:22: Expected `String` but found `T.nilable(String)`
     autocorrect_method_return.rb:20:
     20 |    res = x.name
                   ^^^^^^
+  Autocorrect: Done
+    autocorrect_method_return.rb:22: Replaced with `T.must(res)`
+    22 |  return res
+                 ^^^
 
 autocorrect_method_return.rb:32: Expected `String` but found `NilClass` for method result type https://srb.help/7005
     32 |end
@@ -73,7 +77,7 @@ def initialized_twice(x)
   else
     res = x.name
   end
-  return res
+  return T.must(res)
 end
 
 sig {returns(String)}
@@ -98,6 +102,10 @@ autocorrect_method_return.rb:7: Expected `String` but found `NilClass` for metho
     autocorrect_method_return.rb:7:
      7 |    puts nil
             ^^^^^^^^
+  Autocorrect: Done
+    autocorrect_method_return.rb:7: Replaced with `T.unsafe(puts nil)`
+     7 |    puts nil
+            ^^^^^^^^
 
 autocorrect_method_return.rb:12: Expected `String` but found `NilClass` for method result type https://srb.help/7005
     12 |  return puts nil
@@ -108,6 +116,10 @@ autocorrect_method_return.rb:12: Expected `String` but found `NilClass` for meth
         ^^^^^^^^^^^^^^^^^
   Got `NilClass` originating from:
     autocorrect_method_return.rb:12:
+    12 |  return puts nil
+                 ^^^^^^^^
+  Autocorrect: Done
+    autocorrect_method_return.rb:12: Replaced with `T.unsafe(puts nil)`
     12 |  return puts nil
                  ^^^^^^^^
 
@@ -125,6 +137,10 @@ autocorrect_method_return.rb:22: Expected `String` but found `T.nilable(String)`
     autocorrect_method_return.rb:20:
     20 |    res = x.name
                   ^^^^^^
+  Autocorrect: Done
+    autocorrect_method_return.rb:22: Replaced with `T.unsafe(res)`
+    22 |  return res
+                 ^^^
 
 autocorrect_method_return.rb:32: Expected `String` but found `NilClass` for method result type https://srb.help/7005
     32 |end
@@ -137,6 +153,10 @@ autocorrect_method_return.rb:32: Expected `String` but found `NilClass` for meth
     autocorrect_method_return.rb:26: Possibly uninitialized (`NilClass`) in:
     26 |def implicit_return_via_else
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  Autocorrect: Done
+    autocorrect_method_return.rb:32: Replaced with `T.unsafe(end)`
+    32 |end
+        ^^^
 Errors: 4
 
 --------------------------------------------------------------------------
@@ -147,12 +167,12 @@ extend T::Sig
 
   sig {returns(String)}
   def implicit_return_non_empty_cont_block
-    puts nil
+    T.unsafe(puts nil)
   # ^^^^^^^^ error: Expected `String` but found `NilClass` for method result type
   end
 sig {returns(String)}
 def double_return
-  return puts nil
+  return T.unsafe(puts nil)
 end
 
 sig {params(x: Module).returns(String)}
@@ -162,7 +182,7 @@ def initialized_twice(x)
   else
     res = x.name
   end
-  return res
+  return T.unsafe(res)
 end
 
 sig {returns(String)}
@@ -172,4 +192,4 @@ def implicit_return_via_else
   end
   # TODO(jez) This causes a syntax error that we should detect and skip
   # emitting an autocorrect for.
-end
+T.unsafe(end)
