@@ -57,7 +57,7 @@ struct PackageInfo {
     vector<PackageName> importedPackageNames;
     // List of exported items that form the body of this package's public API.
     // These are copied into every package that imports this package.
-    ast::ClassDef::RHS_store exportedItems;
+    vector<FullyQualifiedName> exports;
 };
 
 /**
@@ -211,6 +211,18 @@ ast::ExpressionPtr name2Expr(core::NameRef name, ast::ExpressionPtr scope = ast:
 }
 
 ast::ExpressionPtr FullyQualifiedName::toLiteral(core::LocOffsets loc) const {
+    ast::ExpressionPtr name = ast::MK::EmptyTree();
+    for (auto part : parts) {
+        name = name2Expr(part, move(name));
+    }
+    // Outer name should have the provided loc.
+    if (auto lit = ast::cast_tree<ast::UnresolvedConstantLit>(name)) {
+        name = ast::MK::UnresolvedConstant(loc, move(lit->scope), lit->cnst);
+    }
+    return name;
+}
+
+ast::ExpressionPtr parts2literal(const vector<core::NameRef> &parts, core::LocOffsets loc) {
     ast::ExpressionPtr name = ast::MK::EmptyTree();
     for (auto part : parts) {
         name = name2Expr(part, move(name));
@@ -505,22 +517,25 @@ struct PackageInfoFinder {
 
         // NOTE: Don't assign locs to the nodes generated below. They will be copied into other __package.rbs that
         // import this package with __package.rb-specific locs.
-        for (auto &klass : exported) {
-            // Item = <PackageRegistry>::MangledPackageName::Path::To::Item
-            ENFORCE(!klass.parts.empty());
-            info->exportedItems.emplace_back(
-                ast::MK::Assign(core::LocOffsets::none(), name2Expr(klass.parts.back()),
-                                prependInternalPackageName(klass.toLiteral(core::LocOffsets::none()))));
-        }
+        // for (auto &klass : exported) {
+        //     // Item = <PackageRegistry>::MangledPackageName::Path::To::Item
+        //     ENFORCE(!klass.parts.empty());
+        //     info->exportedItems.emplace_back(
+        //         ast::MK::Assign(core::LocOffsets::none(), name2Expr(klass.parts.back()),
+        //                         prependInternalPackageName(klass.toLiteral(core::LocOffsets::none()))));
+        // }
+        ENFORCE(info->exports.empty());
+        std::swap(exported, info->exports);
 
-        if (!exportedMethods.empty()) {
-            // extend <PackageRegistry>::Name_of_package::<PackageMethods>
-            info->exportedItems.emplace_back(
-                ast::MK::Send1(core::LocOffsets::none(), ast::MK::Self(core::LocOffsets::none()), core::Names::extend(),
-                               name2Expr(core::Names::Constants::PackageMethods(),
-                                         name2Expr(this->info->name.mangledName,
-                                                   name2Expr(core::Names::Constants::PackageRegistry())))));
-        }
+        ENFORCE(exportedMethods.empty()); // TODO TODO
+        // if (!exportedMethods.empty()) {
+        //     // extend <PackageRegistry>::Name_of_package::<PackageMethods>
+        //     info->exportedItems.emplace_back(
+        //         ast::MK::Send1(core::LocOffsets::none(), ast::MK::Self(core::LocOffsets::none()), core::Names::extend(),
+        //                        name2Expr(core::Names::Constants::PackageMethods(),
+        //                                  name2Expr(this->info->name.mangledName,
+        //                                            name2Expr(core::Names::Constants::PackageRegistry())))));
+        // }
     }
 
     /* Forbid arbitrary computation in packages */
@@ -621,6 +636,85 @@ unique_ptr<PackageInfo> getPackageInfo(core::MutableContext ctx, ast::ParsedFile
     return move(finder.info);
 }
 
+
+class ImportTree {
+    public:
+    UnorderedMap<core::NameRef, std::unique_ptr<ImportTree>> children;
+    core::NameRef srcPackageMangledName;
+
+    ImportTree() = default;
+    ImportTree(const ImportTree &) = delete;
+    ImportTree(ImportTree &&) = default;
+    ImportTree &operator=(const ImportTree &) = delete;
+    ImportTree &operator=(ImportTree &&) = default;
+
+    friend class ImportTreeBuilder;
+};
+
+class ImportTreeBuilder {
+    public:
+    static void addImport(ImportTree *root, const FullyQualifiedName &fqn, const PackageInfo &package);
+    static ast::ExpressionPtr makeModule(ImportTree *root, vector<core::NameRef> &parts, core::NameRef);
+};
+
+void ImportTreeBuilder::addImport(ImportTree *root, const FullyQualifiedName &fqn, const PackageInfo &package) {
+    ImportTree *node = root;
+    for (auto nameRef : fqn.parts) {
+        auto &child = node->children[nameRef];
+        if (!child) {
+            child = make_unique<ImportTree>();
+        } else {
+            // TODO handle naming conflicts
+            ENFORCE(!child->srcPackageMangledName.exists());
+        }
+        node = child.get();
+    }
+    node->srcPackageMangledName = package.name.mangledName;
+    ENFORCE(node->children.empty()); // TODO naming conflicts
+}
+
+ast::ExpressionPtr prependName(ast::ExpressionPtr scope, core::NameRef name) { // TODO duplicated code copied prependInternalPackageName
+    // For `Bar::Baz::Bat`, `UnresolvedConstantLit` will contain `Bar`.
+    ast::UnresolvedConstantLit *lastConstLit = ast::cast_tree<ast::UnresolvedConstantLit>(scope);
+    if (lastConstLit != nullptr) {
+        while (auto constLit = ast::cast_tree<ast::UnresolvedConstantLit>(lastConstLit->scope)) {
+            lastConstLit = constLit;
+        }
+    }
+
+    // If `lastConstLit` is `nullptr`, then `scope` should be EmptyTree.
+    ENFORCE(lastConstLit != nullptr || ast::cast_tree<ast::EmptyTree>(scope) != nullptr);
+
+    auto scopeToPrepend =
+        name2Expr(name, name2Expr(core::Names::Constants::PackageRegistry()));
+    if (lastConstLit == nullptr) {
+        return scopeToPrepend;
+    } else {
+        lastConstLit->scope = move(scopeToPrepend);
+        return scope;
+    }
+}
+
+ast::ExpressionPtr ImportTreeBuilder::makeModule(ImportTree *root, vector<core::NameRef> &parts, core::NameRef todo) {
+    auto todoLoc = core::LocOffsets::none();
+    if (root->srcPackageMangledName.exists()) { // Assignment
+        ENFORCE(root->children.empty()); // Must be a leaf node
+        ENFORCE(!parts.empty());
+
+        auto rhs = prependName(parts2literal(parts, todoLoc), root->srcPackageMangledName);
+        return ast::MK::Assign(todoLoc, name2Expr(parts.back()), std::move(rhs));
+    }
+    ast::ClassDef::RHS_store rhs;
+    for (auto const& [nameRef, child] : root->children) {
+        parts.emplace_back(nameRef);
+        rhs.emplace_back(makeModule(child.get(), parts, todo));
+        parts.pop_back();
+    }
+    core::NameRef name = parts.empty() ? todo : parts.back(); // TODO cleanup "todo"
+
+    return ast::MK::Module(todoLoc, todoLoc, name2Expr(name), {}, std::move(rhs));
+}
+
 // Add:
 //    module <PackageRegistry>::Mangled_Name_Package
 //      module ImportedPackage1
@@ -647,6 +741,7 @@ ast::ParsedFile rewritePackage(core::Context ctx, ast::ParsedFile file, const Pa
 
     {
         UnorderedMap<core::NameRef, core::LocOffsets> importedNames;
+        ImportTree importTree;
         for (auto imported : package->importedPackageNames) {
             auto importedPackage = packageDB.getPackageByMangledName(imported.mangledName);
             if (importedPackage == nullptr) {
@@ -664,27 +759,35 @@ ast::ParsedFile rewritePackage(core::Context ctx, ast::ParsedFile file, const Pa
                 }
             } else {
                 importedNames[imported.mangledName] = imported.loc;
-
-                ast::ClassDef::RHS_store exportedItemsCopy;
-                for (const auto &exported : importedPackage->exportedItems) {
-                    exportedItemsCopy.emplace_back(exported.deepCopy());
+                for (auto &ex : importedPackage->exports) {
+                    ImportTreeBuilder::addImport(&importTree, ex, *importedPackage);
                 }
+                // foos.emplace_back({importedPackage
 
-                ENFORCE(!imported.fullName.parts.empty());
-                // Create a module for the imported package that sets up constant references to exported items.
-                // Use proper loc information on the module name so that `import Foo` displays in the results of LSP
-                // Find All References on `Foo`.
-                importedPackages.emplace_back(ast::MK::Module(imported.loc, imported.loc,
-                                                              imported.fullName.toLiteral(imported.loc), {},
-                                                              std::move(exportedItemsCopy)));
+                // ast::ClassDef::RHS_store exportedItemsCopy;
+                // for (const auto &exported : importedPackage->exportedItems) {
+                //     exportedItemsCopy.emplace_back(exported.deepCopy());
+                // }
+
+                // ENFORCE(!imported.fullName.parts.empty());
+                // // Create a module for the imported package that sets up constant references to exported items.
+                // // Use proper loc information on the module name so that `import Foo` displays in the results of LSP
+                // // Find All References on `Foo`.
+                // importedPackages.emplace_back(ast::MK::Module(imported.loc, imported.loc,
+                //                                               imported.fullName.toLiteral(imported.loc), {},
+                //                                               std::move(exportedItemsCopy)));
             }
         }
+        vector<core::NameRef> parts; // TODO bad api
+        importedPackages.emplace_back(ImportTreeBuilder::makeModule(&importTree, parts, package->name.mangledName));
     }
 
     auto packageNamespace =
         ast::MK::Module(core::LocOffsets::none(), core::LocOffsets::none(),
-                        name2Expr(package->name.mangledName, name2Expr(core::Names::Constants::PackageRegistry())), {},
+                        name2Expr(core::Names::Constants::PackageRegistry()), {},
                         std::move(importedPackages));
+    fmt::print("{}:\n{}\n\n", file.file.data(ctx).path(), packageNamespace.toString(ctx)); // TODO remove
+
 
     auto &rootKlass = ast::cast_tree_nonnull<ast::ClassDef>(file.tree);
     rootKlass.rhs.emplace_back(move(packageNamespace));
