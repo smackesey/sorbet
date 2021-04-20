@@ -6,9 +6,9 @@ class A
   f = -> do
     T.cast(self, A)
 
-    T.reveal_type(self) # error: type: `T.class_of(A)`
+    T.reveal_type(self) # error: type: `A`
 
-    self.instance_helper # error: Method `instance_helper` does not exist on `T.class_of(A)`
+    self.instance_helper
   end
 
   T.reveal_type(self) # error: type: `T.class_of(A)`
@@ -29,9 +29,9 @@ end
 B.class_helper {
   T.cast(self, B)
 
-  T.reveal_type(self) # error: type: `T.class_of(<root>)`
+  T.reveal_type(self) # error: type: `B`
 
-  self.instance_helper # error: Method `instance_helper` does not exist on `T.class_of(<root>)`
+  self.instance_helper
 }
 
 T.reveal_type(self) # error: type: `T.class_of(<root>)`
@@ -47,10 +47,10 @@ module M
 
   def main
     T.cast(self, T.all(M, N))
-    T.reveal_type(self) # error: type: `M`
+    T.reveal_type(self) # error: type: `T.all(M, N)`
 
     helper_from_M
-    helper_from_N # error: Method `helper_from_N` does not exist on `M`
+    helper_from_N
   end
 end
 

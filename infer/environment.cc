@@ -928,7 +928,7 @@ core::TypePtr Environment::processBinding(core::Context ctx, const cfg::CFG &inW
         core::TypeAndOrigins tp;
         bool noLoopChecking = cfg::isa_instruction<cfg::Alias>(bind.value.get()) ||
                               cfg::isa_instruction<cfg::LoadArg>(bind.value.get()) ||
-                              cfg::isa_instruction<cfg::LoadSelf>(bind.value.get());
+                              bind.bind.variable == cfg::LocalRef::selfVariable();
 
         bool checkFullyDefined = true;
         const core::lsp::Query &lspQuery = ctx.state.lspQuery;

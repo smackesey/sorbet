@@ -766,6 +766,10 @@ BasicBlock *CFGBuilder::walk(CFGContext cctx, ast::ExpressionPtr &what, BasicBlo
                 if (c.cast == core::Names::let()) {
                     cctx.inWhat.minLoops[cctx.target.id()] = CFG::MIN_LOOP_LET;
                 }
+                if (c.cast == core::Names::cast() && c.arg.isSelfReference()) {
+                    auto self = cctx.inWhat.enterLocal(core::LocalVariable::selfVariable());
+                    current->exprs.emplace_back(self, c.loc, make_unique<Ident>(cctx.target));
+                }
 
                 ret = current;
             },
