@@ -1,0 +1,323 @@
+digraph "cast_self.rb" {
+subgraph "cluster_::<Class:<root>>#<static-init>" {
+    label = "::<Class:<root>>#<static-init>";
+    color = blue;
+    "bb::<Class:<root>>#<static-init>_0" [shape = invhouse];
+    "bb::<Class:<root>>#<static-init>_1" [shape = parallelogram];
+
+    "bb::<Class:<root>>#<static-init>_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: T.class_of(<root>) = cast(<self>: NilClass, AppliedType {\l  klass = <S <C <U <root>>> $1>\l  targs = [\l    <C <U <AttachedClass>>> = SelfTypeParam(<S <C <U <root>>> $1><C <U <AttachedClass>>>)\l  ]\l});\l<cfgAlias>$6: T.class_of(<Magic>) = alias <C <Magic>>\l<cfgAlias>$8: T.class_of(A) = alias <C A>\l<statTemp>$4: Sorbet::Private::Static::Void = <cfgAlias>$6: T.class_of(<Magic>).<define-top-class-or-module>(<cfgAlias>$8: T.class_of(A))\l<cfgAlias>$11: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$13: T.class_of(A) = alias <C A>\l<statTemp>$9: Sorbet::Private::Static::Void = <cfgAlias>$11: T.class_of(Sorbet::Private::Static).keep_for_ide(<cfgAlias>$13: T.class_of(A))\l<cfgAlias>$17: T.class_of(<Magic>) = alias <C <Magic>>\l<cfgAlias>$19: T.class_of(B) = alias <C B>\l<statTemp>$15: Sorbet::Private::Static::Void = <cfgAlias>$17: T.class_of(<Magic>).<define-top-class-or-module>(<cfgAlias>$19: T.class_of(B))\l<cfgAlias>$22: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$24: T.class_of(B) = alias <C B>\l<statTemp>$20: Sorbet::Private::Static::Void = <cfgAlias>$22: T.class_of(Sorbet::Private::Static).keep_for_ide(<cfgAlias>$24: T.class_of(B))\l<cfgAlias>$27: T.class_of(B) = alias <C B>\l<block-pre-call-temp>$28: Sorbet::Private::Static::Void = <cfgAlias>$27: T.class_of(B).class_helper()\l<selfRestore>$29: T.class_of(<root>) = <self>\l<unconditional>\l"
+    ];
+
+    "bb::<Class:<root>>#<static-init>_0" -> "bb::<Class:<root>>#<static-init>_2" [style="bold"];
+    "bb::<Class:<root>>#<static-init>_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::<Class:<root>>#<static-init>_1" -> "bb::<Class:<root>>#<static-init>_1" [style="bold"];
+    "bb::<Class:<root>>#<static-init>_2" [
+        color = black;
+        label = "block[id=2, rubyBlockId=1](<self>: T.class_of(<root>), <block-pre-call-temp>$28: Sorbet::Private::Static::Void, <selfRestore>$29: T.class_of(<root>))\louterLoops: 1\l<block-call>: NilClass\l"
+    ];
+
+    "bb::<Class:<root>>#<static-init>_2" -> "bb::<Class:<root>>#<static-init>_5" [style="bold"];
+    "bb::<Class:<root>>#<static-init>_2" -> "bb::<Class:<root>>#<static-init>_3" [style="tapered"];
+
+    "bb::<Class:<root>>#<static-init>_3" [
+        color = black;
+        label = "block[id=3, rubyBlockId=0](<block-pre-call-temp>$28: Sorbet::Private::Static::Void, <selfRestore>$29: T.class_of(<root>))\l<statTemp>$25: Sorbet::Private::Static::Void = Solve<<block-pre-call-temp>$28, class_helper>\l<self>: T.class_of(<root>) = <selfRestore>$29\l<cfgAlias>$48: T.class_of(T) = alias <C T>\l<statTemp>$46: T.class_of(<root>) = <cfgAlias>$48: T.class_of(T).reveal_type(<self>: T.class_of(<root>))\l<cfgAlias>$53: T.class_of(<Magic>) = alias <C <Magic>>\l<cfgAlias>$55: T.class_of(N) = alias <C N>\l<statTemp>$51: Sorbet::Private::Static::Void = <cfgAlias>$53: T.class_of(<Magic>).<define-top-class-or-module>(<cfgAlias>$55: T.class_of(N))\l<cfgAlias>$58: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$60: T.class_of(N) = alias <C N>\l<statTemp>$56: Sorbet::Private::Static::Void = <cfgAlias>$58: T.class_of(Sorbet::Private::Static).keep_for_ide(<cfgAlias>$60: T.class_of(N))\l<cfgAlias>$64: T.class_of(<Magic>) = alias <C <Magic>>\l<cfgAlias>$66: T.class_of(M) = alias <C M>\l<statTemp>$62: Sorbet::Private::Static::Void = <cfgAlias>$64: T.class_of(<Magic>).<define-top-class-or-module>(<cfgAlias>$66: T.class_of(M))\l<cfgAlias>$69: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$71: T.class_of(M) = alias <C M>\l<statTemp>$67: Sorbet::Private::Static::Void = <cfgAlias>$69: T.class_of(Sorbet::Private::Static).keep_for_ide(<cfgAlias>$71: T.class_of(M))\l<cfgAlias>$75: T.class_of(<Magic>) = alias <C <Magic>>\l<cfgAlias>$77: T.class_of(ThisSelf) = alias <C ThisSelf>\l<statTemp>$73: Sorbet::Private::Static::Void = <cfgAlias>$75: T.class_of(<Magic>).<define-top-class-or-module>(<cfgAlias>$77: T.class_of(ThisSelf))\l<cfgAlias>$80: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$82: T.class_of(ThisSelf) = alias <C ThisSelf>\l<statTemp>$78: Sorbet::Private::Static::Void = <cfgAlias>$80: T.class_of(Sorbet::Private::Static).keep_for_ide(<cfgAlias>$82: T.class_of(ThisSelf))\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::<Class:<root>>#<static-init>_3" -> "bb::<Class:<root>>#<static-init>_1" [style="bold"];
+    "bb::<Class:<root>>#<static-init>_5" [
+        color = black;
+        label = "block[id=5, rubyBlockId=1](<self>: T.class_of(<root>), <block-pre-call-temp>$28: Sorbet::Private::Static::Void, <selfRestore>$29: T.class_of(<root>))\louterLoops: 1\l<self>: T.class_of(<root>) = loadSelf\l<cfgAlias>$36: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$38: T.class_of(B) = alias <C B>\l<statTemp>$34: Sorbet::Private::Static::Void = <cfgAlias>$36: T.class_of(Sorbet::Private::Static).keep_for_typechecking(<cfgAlias>$38: T.class_of(B))\l<castTemp>$39: T.class_of(<root>) = <self>\l<statTemp>$33: B = cast(<castTemp>$39: T.class_of(<root>), B);\l<cfgAlias>$42: T.class_of(T) = alias <C T>\l<statTemp>$40: T.class_of(<root>) = <cfgAlias>$42: T.class_of(T).reveal_type(<self>: T.class_of(<root>))\l<blockReturnTemp>$32: T.untyped = <self>: T.class_of(<root>).instance_helper()\l<blockReturnTemp>$45: T.noreturn = blockreturn<class_helper> <blockReturnTemp>$32: T.untyped\l<unconditional>\l"
+    ];
+
+    "bb::<Class:<root>>#<static-init>_5" -> "bb::<Class:<root>>#<static-init>_2" [style="bold"];
+}
+
+subgraph "cluster_::A#instance_helper" {
+    label = "::A#instance_helper";
+    color = blue;
+    "bb::A#instance_helper_0" [shape = invhouse];
+    "bb::A#instance_helper_1" [shape = parallelogram];
+
+    "bb::A#instance_helper_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: A = cast(<self>: NilClass, A);\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::A#instance_helper_0" -> "bb::A#instance_helper_1" [style="bold"];
+    "bb::A#instance_helper_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::A#instance_helper_1" -> "bb::A#instance_helper_1" [style="bold"];
+}
+
+subgraph "cluster_::<Class:A>#<static-init>" {
+    label = "::<Class:A>#<static-init>";
+    color = blue;
+    "bb::<Class:A>#<static-init>_0" [shape = invhouse];
+    "bb::<Class:A>#<static-init>_1" [shape = parallelogram];
+
+    "bb::<Class:A>#<static-init>_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: T.class_of(A) = cast(<self>: NilClass, AppliedType {\l  klass = <S <C <U A>> $1>\l  targs = [\l    <C <U <AttachedClass>>> = SelfTypeParam(<S <C <U A>> $1><C <U <AttachedClass>>>)\l  ]\l});\l<cfgAlias>$5: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<statTemp>$7: Symbol(:instance_helper) = :instance_helper\l<statTemp>$8: Symbol(:normal) = :normal\l<statTemp>$3: Symbol(:instance_helper) = <cfgAlias>$5: T.class_of(Sorbet::Private::Static).keep_def(<self>: T.class_of(A), <statTemp>$7: Symbol(:instance_helper), <statTemp>$8: Symbol(:normal))\l<cfgAlias>$11: T.class_of(Kernel) = alias <C Kernel>\l<block-pre-call-temp>$12: Sorbet::Private::Static::Void = <cfgAlias>$11: T.class_of(Kernel).lambda()\l<selfRestore>$13: T.class_of(A) = <self>\l<unconditional>\l"
+    ];
+
+    "bb::<Class:A>#<static-init>_0" -> "bb::<Class:A>#<static-init>_2" [style="bold"];
+    "bb::<Class:A>#<static-init>_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::<Class:A>#<static-init>_1" -> "bb::<Class:A>#<static-init>_1" [style="bold"];
+    "bb::<Class:A>#<static-init>_2" [
+        color = black;
+        label = "block[id=2, rubyBlockId=1](<self>: T.class_of(A), <block-pre-call-temp>$12: Sorbet::Private::Static::Void, <selfRestore>$13: T.class_of(A))\louterLoops: 1\l<block-call>: NilClass\l"
+    ];
+
+    "bb::<Class:A>#<static-init>_2" -> "bb::<Class:A>#<static-init>_5" [style="bold"];
+    "bb::<Class:A>#<static-init>_2" -> "bb::<Class:A>#<static-init>_3" [style="tapered"];
+
+    "bb::<Class:A>#<static-init>_3" [
+        color = black;
+        label = "block[id=3, rubyBlockId=0](<block-pre-call-temp>$12: Sorbet::Private::Static::Void, <selfRestore>$13: T.class_of(A))\lf: T.proc.returns(T.untyped) = Solve<<block-pre-call-temp>$12, lambda>\l<self>: T.class_of(A) = <selfRestore>$13\l<cfgAlias>$32: T.class_of(T) = alias <C T>\l<statTemp>$30: T.class_of(A) = <cfgAlias>$32: T.class_of(T).reveal_type(<self>: T.class_of(A))\l<statTemp>$34: NilClass = <self>: T.class_of(A).puts(f: T.proc.returns(T.untyped))\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::<Class:A>#<static-init>_3" -> "bb::<Class:A>#<static-init>_1" [style="bold"];
+    "bb::<Class:A>#<static-init>_5" [
+        color = black;
+        label = "block[id=5, rubyBlockId=1](<self>: T.class_of(A), <block-pre-call-temp>$12: Sorbet::Private::Static::Void, <selfRestore>$13: T.class_of(A))\louterLoops: 1\l<self>: T.class_of(A) = loadSelf\l<cfgAlias>$20: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$22: T.class_of(A) = alias <C A>\l<statTemp>$18: Sorbet::Private::Static::Void = <cfgAlias>$20: T.class_of(Sorbet::Private::Static).keep_for_typechecking(<cfgAlias>$22: T.class_of(A))\l<castTemp>$23: T.class_of(A) = <self>\l<statTemp>$17: A = cast(<castTemp>$23: T.class_of(A), A);\l<cfgAlias>$26: T.class_of(T) = alias <C T>\l<statTemp>$24: T.class_of(A) = <cfgAlias>$26: T.class_of(T).reveal_type(<self>: T.class_of(A))\l<blockReturnTemp>$16: T.untyped = <self>: T.class_of(A).instance_helper()\l<blockReturnTemp>$29: T.noreturn = blockreturn<lambda> <blockReturnTemp>$16: T.untyped\l<unconditional>\l"
+    ];
+
+    "bb::<Class:A>#<static-init>_5" -> "bb::<Class:A>#<static-init>_2" [style="bold"];
+}
+
+subgraph "cluster_::<Class:B>#class_helper" {
+    label = "::<Class:B>#class_helper";
+    color = blue;
+    "bb::<Class:B>#class_helper_0" [shape = invhouse];
+    "bb::<Class:B>#class_helper_1" [shape = parallelogram];
+
+    "bb::<Class:B>#class_helper_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: T.class_of(B) = cast(<self>: NilClass, AppliedType {\l  klass = <S <C <U B>> $1>\l  targs = [\l    <C <U <AttachedClass>>> = SelfTypeParam(<S <C <U B>> $1><C <U <AttachedClass>>>)\l  ]\l});\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::<Class:B>#class_helper_0" -> "bb::<Class:B>#class_helper_1" [style="bold"];
+    "bb::<Class:B>#class_helper_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::<Class:B>#class_helper_1" -> "bb::<Class:B>#class_helper_1" [style="bold"];
+}
+
+subgraph "cluster_::B#instance_helper" {
+    label = "::B#instance_helper";
+    color = blue;
+    "bb::B#instance_helper_0" [shape = invhouse];
+    "bb::B#instance_helper_1" [shape = parallelogram];
+
+    "bb::B#instance_helper_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: B = cast(<self>: NilClass, B);\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::B#instance_helper_0" -> "bb::B#instance_helper_1" [style="bold"];
+    "bb::B#instance_helper_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::B#instance_helper_1" -> "bb::B#instance_helper_1" [style="bold"];
+}
+
+subgraph "cluster_::<Class:B>#<static-init>" {
+    label = "::<Class:B>#<static-init>";
+    color = blue;
+    "bb::<Class:B>#<static-init>_0" [shape = invhouse];
+    "bb::<Class:B>#<static-init>_1" [shape = parallelogram];
+
+    "bb::<Class:B>#<static-init>_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: T.class_of(B) = cast(<self>: NilClass, AppliedType {\l  klass = <S <C <U B>> $1>\l  targs = [\l    <C <U <AttachedClass>>> = SelfTypeParam(<S <C <U B>> $1><C <U <AttachedClass>>>)\l  ]\l});\l<cfgAlias>$5: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<block-pre-call-temp>$7: Sorbet::Private::Static::Void = <cfgAlias>$5: T.class_of(Sorbet::Private::Static).sig(<self>: T.class_of(B))\l<selfRestore>$8: T.class_of(B) = <self>\l<unconditional>\l"
+    ];
+
+    "bb::<Class:B>#<static-init>_0" -> "bb::<Class:B>#<static-init>_2" [style="bold"];
+    "bb::<Class:B>#<static-init>_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::<Class:B>#<static-init>_1" -> "bb::<Class:B>#<static-init>_1" [style="bold"];
+    "bb::<Class:B>#<static-init>_2" [
+        color = black;
+        label = "block[id=2, rubyBlockId=1](<self>: T.class_of(B), <block-pre-call-temp>$7: Sorbet::Private::Static::Void, <selfRestore>$8: T.class_of(B))\louterLoops: 1\l<block-call>: NilClass\l"
+    ];
+
+    "bb::<Class:B>#<static-init>_2" -> "bb::<Class:B>#<static-init>_5" [style="bold"];
+    "bb::<Class:B>#<static-init>_2" -> "bb::<Class:B>#<static-init>_3" [style="tapered"];
+
+    "bb::<Class:B>#<static-init>_3" [
+        color = black;
+        label = "block[id=3, rubyBlockId=0](<block-pre-call-temp>$7: Sorbet::Private::Static::Void, <selfRestore>$8: T.class_of(B))\l<statTemp>$3: Sorbet::Private::Static::Void = Solve<<block-pre-call-temp>$7, sig>\l<self>: T.class_of(B) = <selfRestore>$8\l<cfgAlias>$23: T.class_of(T::Sig) = alias <C Sig>\l<cfgAlias>$25: T.class_of(T) = alias <C T>\l<statTemp>$20: T.class_of(B) = <self>: T.class_of(B).extend(<cfgAlias>$23: T.class_of(T::Sig))\l<cfgAlias>$28: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<statTemp>$30: Symbol(:class_helper) = :class_helper\l<statTemp>$31: Symbol(:normal) = :normal\l<statTemp>$26: Symbol(:class_helper) = <cfgAlias>$28: T.class_of(Sorbet::Private::Static).keep_self_def(<self>: T.class_of(B), <statTemp>$30: Symbol(:class_helper), <statTemp>$31: Symbol(:normal))\l<cfgAlias>$34: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<statTemp>$36: Symbol(:instance_helper) = :instance_helper\l<statTemp>$37: Symbol(:normal) = :normal\l<statTemp>$32: Symbol(:instance_helper) = <cfgAlias>$34: T.class_of(Sorbet::Private::Static).keep_def(<self>: T.class_of(B), <statTemp>$36: Symbol(:instance_helper), <statTemp>$37: Symbol(:normal))\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::<Class:B>#<static-init>_3" -> "bb::<Class:B>#<static-init>_1" [style="bold"];
+    "bb::<Class:B>#<static-init>_5" [
+        color = black;
+        label = "block[id=5, rubyBlockId=1](<self>: T.class_of(B), <block-pre-call-temp>$7: Sorbet::Private::Static::Void, <selfRestore>$8: T.class_of(B))\louterLoops: 1\l<self>: T::Private::Methods::DeclBuilder = loadSelf\l<hashTemp>$14: Symbol(:blk) = :blk\l<cfgAlias>$18: T.class_of(T) = alias <C T>\l<statTemp>$16: T.class_of(T.proc) = <cfgAlias>$18: T.class_of(T).proc()\l<hashTemp>$15: T.class_of(T.proc) = <statTemp>$16: T.class_of(T.proc).void()\l<statTemp>$12: T::Private::Methods::DeclBuilder = <self>: T::Private::Methods::DeclBuilder.params(<hashTemp>$14: Symbol(:blk), <hashTemp>$15: T.class_of(T.proc))\l<blockReturnTemp>$11: T::Private::Methods::DeclBuilder = <statTemp>$12: T::Private::Methods::DeclBuilder.void()\l<blockReturnTemp>$19: T.noreturn = blockreturn<sig> <blockReturnTemp>$11: T::Private::Methods::DeclBuilder\l<unconditional>\l"
+    ];
+
+    "bb::<Class:B>#<static-init>_5" -> "bb::<Class:B>#<static-init>_2" [style="bold"];
+}
+
+subgraph "cluster_::N#helper_from_N" {
+    label = "::N#helper_from_N";
+    color = blue;
+    "bb::N#helper_from_N_0" [shape = invhouse];
+    "bb::N#helper_from_N_1" [shape = parallelogram];
+
+    "bb::N#helper_from_N_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: N = cast(<self>: NilClass, N);\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::N#helper_from_N_0" -> "bb::N#helper_from_N_1" [style="bold"];
+    "bb::N#helper_from_N_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::N#helper_from_N_1" -> "bb::N#helper_from_N_1" [style="bold"];
+}
+
+subgraph "cluster_::<Class:N>#<static-init>" {
+    label = "::<Class:N>#<static-init>";
+    color = blue;
+    "bb::<Class:N>#<static-init>_0" [shape = invhouse];
+    "bb::<Class:N>#<static-init>_1" [shape = parallelogram];
+
+    "bb::<Class:N>#<static-init>_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: T.class_of(N) = cast(<self>: NilClass, AppliedType {\l  klass = <S <C <U N>> $1>\l  targs = [\l    <C <U <AttachedClass>>> = SelfTypeParam(<S <C <U N>> $1><C <U <AttachedClass>>>)\l  ]\l});\l<cfgAlias>$4: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<statTemp>$6: Symbol(:helper_from_N) = :helper_from_N\l<statTemp>$7: Symbol(:normal) = :normal\l<returnMethodTemp>$2: Symbol(:helper_from_N) = <cfgAlias>$4: T.class_of(Sorbet::Private::Static).keep_def(<self>: T.class_of(N), <statTemp>$6: Symbol(:helper_from_N), <statTemp>$7: Symbol(:normal))\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: Symbol(:helper_from_N)\l<unconditional>\l"
+    ];
+
+    "bb::<Class:N>#<static-init>_0" -> "bb::<Class:N>#<static-init>_1" [style="bold"];
+    "bb::<Class:N>#<static-init>_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::<Class:N>#<static-init>_1" -> "bb::<Class:N>#<static-init>_1" [style="bold"];
+}
+
+subgraph "cluster_::M#helper_from_M" {
+    label = "::M#helper_from_M";
+    color = blue;
+    "bb::M#helper_from_M_0" [shape = invhouse];
+    "bb::M#helper_from_M_1" [shape = parallelogram];
+
+    "bb::M#helper_from_M_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: M = cast(<self>: NilClass, M);\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::M#helper_from_M_0" -> "bb::M#helper_from_M_1" [style="bold"];
+    "bb::M#helper_from_M_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::M#helper_from_M_1" -> "bb::M#helper_from_M_1" [style="bold"];
+}
+
+subgraph "cluster_::M#main" {
+    label = "::M#main";
+    color = blue;
+    "bb::M#main_0" [shape = invhouse];
+    "bb::M#main_1" [shape = parallelogram];
+
+    "bb::M#main_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: M = cast(<self>: NilClass, M);\l<cfgAlias>$6: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$9: T.class_of(T) = alias <C T>\l<cfgAlias>$11: T.class_of(M) = alias <C M>\l<cfgAlias>$13: T.class_of(N) = alias <C N>\l<statTemp>$7: <Type: T.all(M, N)> = <cfgAlias>$9: T.class_of(T).all(<cfgAlias>$11: T.class_of(M), <cfgAlias>$13: T.class_of(N))\l<statTemp>$4: Sorbet::Private::Static::Void = <cfgAlias>$6: T.class_of(Sorbet::Private::Static).keep_for_typechecking(<statTemp>$7: <Type: T.all(M, N)>)\l<castTemp>$14: M = <self>\l<statTemp>$3: T.all(M, N) = cast(<castTemp>$14: M, M & N);\l<cfgAlias>$17: T.class_of(T) = alias <C T>\l<statTemp>$15: M = <cfgAlias>$17: T.class_of(T).reveal_type(<self>: M)\l<statTemp>$19: T.untyped = <self>: M.helper_from_M()\l<returnMethodTemp>$2: T.untyped = <self>: M.helper_from_N()\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: T.untyped\l<unconditional>\l"
+    ];
+
+    "bb::M#main_0" -> "bb::M#main_1" [style="bold"];
+    "bb::M#main_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::M#main_1" -> "bb::M#main_1" [style="bold"];
+}
+
+subgraph "cluster_::<Class:M>#<static-init>" {
+    label = "::<Class:M>#<static-init>";
+    color = blue;
+    "bb::<Class:M>#<static-init>_0" [shape = invhouse];
+    "bb::<Class:M>#<static-init>_1" [shape = parallelogram];
+
+    "bb::<Class:M>#<static-init>_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: T.class_of(M) = cast(<self>: NilClass, AppliedType {\l  klass = <S <C <U M>> $1>\l  targs = [\l    <C <U <AttachedClass>>> = SelfTypeParam(<S <C <U M>> $1><C <U <AttachedClass>>>)\l  ]\l});\l<cfgAlias>$6: T.class_of(T::Sig) = alias <C Sig>\l<cfgAlias>$8: T.class_of(T) = alias <C T>\l<statTemp>$3: T.class_of(M) = <self>: T.class_of(M).extend(<cfgAlias>$6: T.class_of(T::Sig))\l<cfgAlias>$11: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<statTemp>$13: Symbol(:helper_from_M) = :helper_from_M\l<statTemp>$14: Symbol(:normal) = :normal\l<statTemp>$9: Symbol(:helper_from_M) = <cfgAlias>$11: T.class_of(Sorbet::Private::Static).keep_def(<self>: T.class_of(M), <statTemp>$13: Symbol(:helper_from_M), <statTemp>$14: Symbol(:normal))\l<cfgAlias>$17: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<statTemp>$19: Symbol(:main) = :main\l<statTemp>$20: Symbol(:normal) = :normal\l<statTemp>$15: Symbol(:main) = <cfgAlias>$17: T.class_of(Sorbet::Private::Static).keep_def(<self>: T.class_of(M), <statTemp>$19: Symbol(:main), <statTemp>$20: Symbol(:normal))\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::<Class:M>#<static-init>_0" -> "bb::<Class:M>#<static-init>_1" [style="bold"];
+    "bb::<Class:M>#<static-init>_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::<Class:M>#<static-init>_1" -> "bb::<Class:M>#<static-init>_1" [style="bold"];
+}
+
+subgraph "cluster_::ThisSelf#main" {
+    label = "::ThisSelf#main";
+    color = blue;
+    "bb::ThisSelf#main_0" [shape = invhouse];
+    "bb::ThisSelf#main_1" [shape = parallelogram];
+
+    "bb::ThisSelf#main_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: ThisSelf = cast(<self>: NilClass, ThisSelf);\l<cfgAlias>$6: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<cfgAlias>$8: T.class_of(Kernel) = alias <C Kernel>\l<statTemp>$4: Sorbet::Private::Static::Void = <cfgAlias>$6: T.class_of(Sorbet::Private::Static).keep_for_typechecking(<cfgAlias>$8: T.class_of(Kernel))\l<castTemp>$9: ThisSelf = <self>\lthis: Kernel = cast(<castTemp>$9: ThisSelf, Kernel);\l<cfgAlias>$12: T.class_of(T) = alias <C T>\l<statTemp>$10: Kernel = <cfgAlias>$12: T.class_of(T).reveal_type(this: Kernel)\l<returnMethodTemp>$2: NilClass = this: Kernel.puts()\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::ThisSelf#main_0" -> "bb::ThisSelf#main_1" [style="bold"];
+    "bb::ThisSelf#main_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::ThisSelf#main_1" -> "bb::ThisSelf#main_1" [style="bold"];
+}
+
+subgraph "cluster_::<Class:ThisSelf>#<static-init>" {
+    label = "::<Class:ThisSelf>#<static-init>";
+    color = blue;
+    "bb::<Class:ThisSelf>#<static-init>_0" [shape = invhouse];
+    "bb::<Class:ThisSelf>#<static-init>_1" [shape = parallelogram];
+
+    "bb::<Class:ThisSelf>#<static-init>_0" [
+        color = black;
+        label = "block[id=0, rubyBlockId=0]()\l<self>: T.class_of(ThisSelf) = cast(<self>: NilClass, AppliedType {\l  klass = <S <C <U ThisSelf>> $1>\l  targs = [\l    <C <U <AttachedClass>>> = SelfTypeParam(<S <C <U ThisSelf>> $1><C <U <AttachedClass>>>)\l  ]\l});\l<cfgAlias>$6: T.class_of(T::Sig) = alias <C Sig>\l<cfgAlias>$8: T.class_of(T) = alias <C T>\l<statTemp>$3: T.class_of(ThisSelf) = <self>: T.class_of(ThisSelf).extend(<cfgAlias>$6: T.class_of(T::Sig))\l<cfgAlias>$11: T.class_of(Sorbet::Private::Static) = alias <C Static>\l<statTemp>$13: Symbol(:main) = :main\l<statTemp>$14: Symbol(:normal) = :normal\l<statTemp>$9: Symbol(:main) = <cfgAlias>$11: T.class_of(Sorbet::Private::Static).keep_def(<self>: T.class_of(ThisSelf), <statTemp>$13: Symbol(:main), <statTemp>$14: Symbol(:normal))\l<finalReturn>: T.noreturn = return <returnMethodTemp>$2: NilClass\l<unconditional>\l"
+    ];
+
+    "bb::<Class:ThisSelf>#<static-init>_0" -> "bb::<Class:ThisSelf>#<static-init>_1" [style="bold"];
+    "bb::<Class:ThisSelf>#<static-init>_1" [
+        color = black;
+        label = "block[id=1, rubyBlockId=0]()\l<unconditional>\l"
+    ];
+
+    "bb::<Class:ThisSelf>#<static-init>_1" -> "bb::<Class:ThisSelf>#<static-init>_1" [style="bold"];
+}
+
+}
+
